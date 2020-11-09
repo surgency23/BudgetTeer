@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.dark(),
-      home: TransactionAddingState(),
+      home: TransactionSubmission(),
     );
   }
 }
@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
 // class HomePage extends StatefulWidget {
 //   @override
 //   _HomePageState createState() => _HomePageState();
-//   TransactionAddingState createState() => TransactionAddingState();
+//   TransactionSubmission createState() => TransactionSubmission();
 // }
 
-class TotalReportingPage extends StatelessWidget {
+class TabView extends StatelessWidget {
   final myController = TextEditingController();
 
   @override
@@ -43,11 +43,11 @@ class TotalReportingPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text('Go back!'),
+                    child: Text("Reports page"),
                   ),
                 ),
                 Center(
-                  child: FloatingActionButton(
+                  child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -59,115 +59,75 @@ class TotalReportingPage extends StatelessWidget {
   }
 }
 
-class TransactionAddingState extends StatelessWidget {
+class TransactionSubmission extends StatelessWidget {
   final controllerForNumPad = NumpadController(format: NumpadFormat.CURRENCY);
+  //Text content = new Text(data);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Submit your transaction!"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-              padding: EdgeInsets.all(50.0),
-              child: NumpadText(
-                  controller: controllerForNumPad,
-                  style: TextStyle(fontSize: 50))),
-          Expanded(
-              child: Numpad(
-                  buttonColor: Colors.blue,
-                  controller: controllerForNumPad,
-                  buttonTextSize: 35)),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            Padding(
-                padding: EdgeInsets.all(10.0),
-                child: RaisedButton(
-                    padding: const EdgeInsets.all(10.0),
-                    color: Colors.blue,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TotalReportingPage()));
-                    },
-                    child: Text("Reports", style: TextStyle(fontSize: 25)))),
-            Expanded(
-                child: RaisedButton(
-                    onPressed: () {
-                      content:
-                      Text(controllerForNumPad.formattedString);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TotalReportingPage()));
-                    },
-                    textColor: Colors.white,
-                    padding: const EdgeInsets.all(10.0),
-                    color: Colors.blue,
-                    child: Text("Submit", style: TextStyle(fontSize: 25))))
-          ])
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: Text("Submit your transaction!"),
+        ),
+        body: Container(
+          //padding: EdgeInsets.all(0.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                  padding: EdgeInsets.all(50.0),
+                  child: NumpadText(
+                      controller: controllerForNumPad,
+                      style: TextStyle(fontSize: 50))),
+              Expanded(
+                  child: Numpad(
+                      buttonColor: Colors.blue,
+                      controller: controllerForNumPad,
+                      buttonTextSize: 35)),
+              Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: RaisedButton(
+                            padding: const EdgeInsets.all(10.0),
+                            color: Colors.blue,
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TabView(
+                                          text: (controllerForNumPad
+                                              .formattedString))));
+                            },
+                            child: Text("Reports",
+                                style: TextStyle(fontSize: 25)))),
+                    SizedBox(
+                        width: 250,
+                        child: RaisedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TabView(
+                                          text: (controllerForNumPad
+                                              .formattedString))));
+                            },
+                            textColor: Colors.white,
+                            padding: const EdgeInsets.all(10.0),
+                            color: Colors.blue,
+                            child:
+                                Text("Submit", style: TextStyle(fontSize: 25))))
+                  ])
+            ],
+          ),
+        ));
   }
 }
 
-///the above are the the two buttons that are supposed to be underneath the numpad widget but i want it as a row of 2 buttons. need to figure that out
-//  Expanded(
-//                   child: Row(
-//                       crossAxisAlignment: CrossAxisAlignment.center,
-//                       children: <Widget>[
-
-//                   ]))
-
-/*  child: Column(children: <Widget>[
-          Padding(
-              padding: EdgeInsets.all(40.0),
-              child: NumpadText(
-                  controller: controllerForNumPad,
-                  style: TextStyle(fontSize: 50))),
-          Expanded(
-              child: Numpad(
-                  buttonColor: Colors.blue,
-                  controller: controllerForNumPad,
-                  buttonTextSize: 35)),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            Expanded(
-              child: RaisedButton(
-
-                  // When the user presses the button, show an alert dialog containing
-                  // the text that the user has entered into the text field.
-                  onPressed: () {
-                    // Retrieve the text the that user has entered by using the
-                    // controllerForNumPad.
-                    content:
-                    Text(controllerForNumPad.formattedString);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TotalReportingPage()));
-                  },
-                  textColor: Colors.white,
-                  padding: const EdgeInsets.all(20.0),
-                  color: Colors.blue,
-                  child: Text("Submit Transaction",
-                      style: TextStyle(fontSize: 15))),
-            ),
-            Expanded(
-                child: RaisedButton(
-                    textColor: Colors.white,
-                    padding: const EdgeInsets.all(20.0),
-                    color: Colors.blue,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TotalReportingPage()));
-                    },
-                    child: Text("Reports", style: TextStyle(fontSize: 25))))
-          ])
-        ])));
-   */
+class ReportsPage extends StatelessWidget {
+  final myController = TextEditingController();
+  final String text;
+  ReportsPage({Key key, this.text}) : super(key: key);
+}
