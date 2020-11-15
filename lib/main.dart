@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_numpad_widget/flutter_numpad_widget.dart';
-import 'package:budgeteer/entities/transaction.Dart';
-import 'dart:convert';
+// import 'package:budgeteer/entities/transaction.Dart';
+// import 'package:sqflite/sqflite.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  static List<Transaction> _key = List<Transaction>();
+
   @override
   Widget build(BuildContext context) {
+    print(_key.toString());
     return MaterialApp(
       theme: ThemeData.dark(),
       home: TransactionSubmission(),
@@ -37,9 +40,7 @@ class TabView extends StatelessWidget {
 
 class TransactionSubmission extends StatelessWidget {
   final controllerForNumPad = NumpadController(format: NumpadFormat.CURRENCY);
-  //Text content = new Text(data);
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -70,12 +71,11 @@ class TransactionSubmission extends StatelessWidget {
                             padding: const EdgeInsets.all(10.0),
                             color: Colors.blue,
                             onPressed: () {
-                              String temp = controllerForNumPad.formattedString;
+                              //String temp = controllerForNumPad.formattedString;
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          ReportsPage(text: (temp))));
+                                      builder: (context) => ReportsPage()));
                             },
                             child: Text("Reports",
                                 style: TextStyle(fontSize: 25)))),
@@ -83,12 +83,13 @@ class TransactionSubmission extends StatelessWidget {
                         width: 250,
                         child: RaisedButton(
                             onPressed: () {
-                              String temp = controllerForNumPad.formattedString;
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ReportsPage(text: (temp))));
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => ReportsPage()));
+                              Transaction temp;
+                              temp.total = controllerForNumPad.formattedString;
+                              MyApp._key.add(temp);
                               controllerForNumPad.clear();
                             },
                             textColor: Colors.white,
@@ -106,40 +107,19 @@ class TransactionSubmission extends StatelessWidget {
 class ReportsPage extends StatelessWidget {
   final myController = TextEditingController();
   String text;
-  final List<Transaction> _transactions = List<Transaction>();
   ReportsPage({Key key, this.text}) : super(key: key);
-  addingToTransactionList(text) {
-    Transaction temp;
-    temp.total = text;
-    _transactions.addAll(temp);
-  } //figure out how to pass text to this class, and be able to add it to the total property and push that to the transactions list
-
-  fetchTransactions() {
-    var transactions = List<Transaction>();
-    String jsonString =
-        '[{"total": "20.00"},{"total": "8.00"}, {"total": "20.00"}, {"total": "50.00"}, {"total": "16.00"}, {"total": "6.00"}, {"total": "8.00"}]';
-    var transactionsJson = json.decode(jsonString);
-    for (var transactionJson in transactionsJson) {
-      transactions.add(Transaction.fromJSON(transactionJson));
-    }
-    _transactions.addAll(transactions);
-  }
 
   @override
   Widget build(BuildContext context) {
-    fetchTransactions();
     return Scaffold(
         appBar: AppBar(
           title: Text("Total Transactions Submitted"),
         ),
         body: Stack(children: <Widget>[
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Go Back ' + text),
-          ),
-          ListView.builder(
+          TransactionListS(
+            key: MyApp._key,
+          )
+          /*ListView.builder(
             // Build the ListView
             itemBuilder: (context, index) {
               return Card(
@@ -160,6 +140,59 @@ class ReportsPage extends StatelessWidget {
             },
             itemCount: _transactions.length,
           )
+        */
         ]));
   }
+}
+
+class Transaction {
+  String total;
+
+  Transaction({this.total});
+
+  factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
+        total: json["total"] == null ? null : json["total"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "total": total == null ? null : total,
+      };
+}
+
+class TransactionListS extends StatefulWidget {
+  TransactionListS({Key key}) : super(key: key);
+
+  @override
+  TransactionList createState() => TransactionList();
+}
+
+class TransactionList extends State<TransactionListS> {
+  List<Transaction> transactions = [
+    Transaction(total: '20.00'),
+    Transaction(total: '8.00'),
+    Transaction(total: "50.00")
+  ];
+
+  void setTodo(Transaction transaction) {
+    transactions.add(transaction);
+    throw ("got into settodo");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return myListView(context, transactions);
+  }
+}
+
+Widget myListView(BuildContext context, List<Transaction> transactions) {
+  // backing data
+  return ListView.builder(
+    itemCount: transactions.length,
+    itemBuilder: (context, index) {
+      return ListTile(
+        title: Text(transactions[index].total),
+        //leading: Icon(transactions[index].icons),
+      );
+    },
+  );
 }
